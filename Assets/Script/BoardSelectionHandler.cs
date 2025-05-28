@@ -46,9 +46,10 @@ public class BoardSelectionHandler : MonoBehaviour
             {
                 Vector2Int coord = GetTileCoord(tile.transform.position);
                 ChessPiece clickedPiece = ChessBoardNetworkSpawner.Instance.GetPieceAt(coord.x, coord.y);
-                Debug.Log($"was clicked in " + coord.x + coord.y);
-                // ở client không thể gọi từ khúc này trở xuống 
-                if (clickedPiece != null && clickedPiece.Team == ChessBoardNetworkSpawner.Instance.currentTurnTeam)
+                Debug.Log($"was clicked in {clickedPiece},");
+
+                // ở client  đang lỗi không thể gọi từ khúc này trở xuống 
+                if (clickedPiece != null )
                 {
                     Debug.Log("SelectPiece");
                     SelectPiece(clickedPiece, coord);
@@ -56,6 +57,10 @@ public class BoardSelectionHandler : MonoBehaviour
                 else if (selectedPiece != null && availableMoves.Contains(coord))
                 {
                     MoveSelectedPieceTo(coord);
+                }
+                else if (clickedPiece == null)
+                {
+                    Debug.Log("đéo có quân cờ nào");
                 }
             }
         }
