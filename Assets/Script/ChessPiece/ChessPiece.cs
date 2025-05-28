@@ -15,9 +15,8 @@ public enum ChessPieceType
 
 public class ChessPiece : NetworkBehaviour
 {
-    public int Team;
-    [Networked]
-    public Vector3 NetworkedPosition { get; set; }
+    [Networked] public int Team { get; set;}
+    [Networked] public Vector3 NetworkedPosition { get; set; }
     public int currentX;
     public int currentY;
     public ChessPieceType type;
@@ -60,12 +59,7 @@ public class ChessPiece : NetworkBehaviour
 
     public virtual List<Vector2Int> GetAvailableMoves(ref ChessPiece[,] board, int tileCountX, int tileCountY)
     {
-        return new List<Vector2Int> {
-            new Vector2Int(3, 3),
-            new Vector2Int(3, 4),
-            new Vector2Int(4, 3),
-            new Vector2Int(4, 4)
-        };
+        return new List<Vector2Int> {   };
     }
 
     public virtual SpecialMove GetSpecialMoves(ref ChessPiece[,] board, ref List<Vector2Int[]> moveList, ref List<Vector2Int> AvaibleMoves)
@@ -112,14 +106,36 @@ public class ChessPiece : NetworkBehaviour
         Vector3 desiredForward = (team == 1) ? Vector3.forward : Vector3.back;
         transform.rotation = Quaternion.LookRotation(desiredForward);
     }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_MoveTo(Vector3 targetPosition)
+    // RPC gọi từ client lên host/state authority để yêu cầu di chuyển
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestMove(Vector3 targetPosition, RpcInfo info = default)
     {
-        Debug.Log($"[RPC] Piece {name} moved to {targetPosition}");
-        SetPosition(targetPosition, force: true);
-    }
+        // Kiểm tra quyền (nếu muốn), ví dụ chỉ di chuyển khi đúng lượt...
+        bool canMove = ChessBoardNetworkSpawner.Instance.currentTurnTeam == Team;
+        if (!HasInputAuthority)
+        {
+            Debug.LogWarning("Client không có quyền điều khiển quân này.");
+            return;
+        }
 
+        if (canMove)
+        {
+            Debug.Log($"[RPC_RequestMove] Moving piece {name} to {targetPosition}");
+
+            // Thực hiện di chuyển, cập nhật position cho networked state
+            SetPosition(targetPosition, force: true);
+
+            // Nếu cần, có thể gọi thêm các hàm logic khác như cập nhật board...
+            ChessBoardNetworkSpawner.Instance.MovePieceOnBoard(this, currentX, currentY); // Cập nhật logic bảng cờ, nếu có
+
+            // Chuyển lượt
+            ChessBoardNetworkSpawner.Instance.currentTurnTeam = 1 - ChessBoardNetworkSpawner.Instance.currentTurnTeam;
+        }
+        else
+        {
+            Debug.LogWarning($"Player không được phép di chuyển quân cờ này hoặc không đúng lượt.");
+        }
+    }
 
 }
 

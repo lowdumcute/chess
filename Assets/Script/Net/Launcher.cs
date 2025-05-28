@@ -9,6 +9,8 @@ public class Launcher : MonoBehaviour, INetworkRunnerCallbacks
 {
     public NetworkRunner runnerPrefab;
     public NetworkObject chessboardPrefab;
+    private PlayerRef whitePlayer;
+    private PlayerRef blackPlayer;
 
     private NetworkRunner runner;
 
@@ -39,13 +41,18 @@ public class Launcher : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log("Player joined: " + player);
-
         if (runner.IsServer && runner.ActivePlayers.Count() == 2)
         {
             Debug.Log("Spawning chessboard...");
             GameUI.Instance.OnGame();
-            runner.Spawn(chessboardPrefab, Vector3.zero, Quaternion.identity);
+
+            NetworkObject boardObj = runner.Spawn(chessboardPrefab, Vector3.zero, Quaternion.identity);
+
+            if (boardObj.TryGetComponent(out ChessBoardNetworkSpawner board))
+            {
+                board.whitePlayer = whitePlayer;
+                board.blackPlayer = blackPlayer;
+            }
         }
     }
 
@@ -83,7 +90,6 @@ public class Launcher : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
 
-    // CHỮ KÝ MỚI PHẢI IMPLEMENT ĐÚNG
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
 
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }

@@ -46,9 +46,11 @@ public class BoardSelectionHandler : MonoBehaviour
             {
                 Vector2Int coord = GetTileCoord(tile.transform.position);
                 ChessPiece clickedPiece = ChessBoardNetworkSpawner.Instance.GetPieceAt(coord.x, coord.y);
-
-                if (clickedPiece != null && clickedPiece.Team == ChessBoardNetworkSpawner.Instance.currentTurnTeam && clickedPiece.Object.HasInputAuthority)
+                Debug.Log($"was clicked in " + coord.x + coord.y);
+                // ở client không thể gọi từ khúc này trở xuống 
+                if (clickedPiece != null && clickedPiece.Team == ChessBoardNetworkSpawner.Instance.currentTurnTeam)
                 {
+                    Debug.Log("SelectPiece");
                     SelectPiece(clickedPiece, coord);
                 }
                 else if (selectedPiece != null && availableMoves.Contains(coord))
@@ -89,19 +91,19 @@ public class BoardSelectionHandler : MonoBehaviour
 
     void MoveSelectedPieceTo(Vector2Int targetCoord)
     {
-        Debug.Log($"Moving piece {selectedPiece.name} to {targetCoord}");
+        Debug.Log($"Requesting move of piece {selectedPiece.name} to {targetCoord}");
 
         Vector3 targetPos = ChessBoardNetworkSpawner.Instance.GetTileCenter(targetCoord.x, targetCoord.y);
-        selectedPiece.RPC_MoveTo(targetPos); // đảm bảo đã có Rpc và chạy đúng
 
-        ChessBoardNetworkSpawner.Instance.MovePieceOnBoard(selectedPiece, targetCoord.x, targetCoord.y);
-        ChessBoardNetworkSpawner.Instance.currentTurnTeam = 1 - ChessBoardNetworkSpawner.Instance.currentTurnTeam;
+        // Gọi RPC từ client lên server/state authority để yêu cầu di chuyển
+        selectedPiece.RPC_RequestMove(targetPos);
+
+        // Việc đó sẽ do bên StateAuthority xử lý trong RPC_RequestMove
 
         selectedPiece = null;
         availableMoves.Clear();
         ClearMoveHighlights();
     }
-
 
     void SetMaterial(GameObject obj, Material mat)
     {
