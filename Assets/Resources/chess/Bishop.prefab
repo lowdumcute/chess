@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 6437360}
   - component: {fileID: -5594473005329480419}
   - component: {fileID: -2962802810861180509}
-  - component: {fileID: -1713267040160400850}
   m_Layer: 0
   m_Name: Bishop
   m_TagString: Untagged
@@ -124,11 +123,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53c7c4ed1ca392d46853040ae9518590, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 0
+  Team: 0
+  _NetworkedPosition: {x: 0, y: 0, z: 0}
   currentX: 0
   currentY: 0
   type: 0
-  _NetworkedPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &-2962802810861180509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,22 +146,4 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: -5594473005329480419}
-  - {fileID: -1713267040160400850}
   ForceRemoteRenderTimeframe: 0
---- !u!114 &-1713267040160400850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 196866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stateAuthorityChangeErrorCorrectionDelta: 0
-  SyncScale: 0
-  SyncParent: 0
-  _autoAOIOverride: 1
-  DisableSharedModeInterpolation: 0

@@ -8,31 +8,31 @@ public class Pawn : ChessPiece
 
     {
         List<Vector2Int> r = new List<Vector2Int>();
-        int direction = (team == 0) ? 1 : -1;
+        int direction = (Team == 0) ? 1 : -1;
         // one int fornt 
         if (board[currentX, currentY + direction] == null)
             r.Add(new Vector2Int(currentX, currentY + direction));
         // two int fornt
         if (board[currentX, currentY + direction] == null)
         {
-            if (currentY == 1 && team == 0 && board[currentX, currentY + direction * 2] == null)
+            if (currentY == 1 && Team == 0 && board[currentX, currentY + direction * 2] == null)
                 r.Add(new Vector2Int(currentX, currentY + direction * 2));
-            if (currentY == 6 && team == 1 && board[currentX, currentY + direction * 2] == null)
+            if (currentY == 6 && Team == 1 && board[currentX, currentY + direction * 2] == null)
                 r.Add(new Vector2Int(currentX, currentY + direction * 2));
         }
         // kill move 
         if (currentX != tileCountX - 1)
-            if (board[currentX + 1, currentY + direction] != null && board[currentX + 1, currentY + direction].team != team)
+            if (board[currentX + 1, currentY + direction] != null && board[currentX + 1, currentY + direction].Team != Team)
                 r.Add(new Vector2Int(currentX + 1, currentY + direction));
         if (currentX != 0)
-            if (board[currentX - 1, currentY + direction] != null && board[currentX - 1, currentY + direction].team != team)
+            if (board[currentX - 1, currentY + direction] != null && board[currentX - 1, currentY + direction].Team != Team)
                 r.Add(new Vector2Int(currentX - 1, currentY + direction));
 
         return r;
     }
     public override SpecialMove GetSpecialMoves(ref ChessPiece[,] board, ref List<Vector2Int[]> moveList, ref List< Vector2Int> availableMoves)
     {
-        int direction = (team == 0) ? 1 : -1;
+        int direction = (Team == 0) ? 1 : -1;
         // en Passentt 
         if (moveList.Count > 0)
         {
@@ -44,7 +44,7 @@ public class Pawn : ChessPiece
                     // check if the last move was a pawn moving two spaces forward
                     if (lastMove[1].y == currentY && Mathf.Abs(lastMove[1].x - currentX) == 1)
                     {
-                        if (board[lastMove[1].x, lastMove[1].y].team != team)
+                        if (board[lastMove[1].x, lastMove[1].y].Team != Team)
                         {
                             if (lastMove[1].y == currentY)
                             {

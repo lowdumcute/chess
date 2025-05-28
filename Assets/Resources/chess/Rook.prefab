@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 6427986}
   - component: {fileID: -5395859111733213134}
   - component: {fileID: -3492972097354928548}
-  - component: {fileID: -1882609265475161352}
   m_Layer: 0
   m_Name: Rook
   m_TagString: Untagged
@@ -124,11 +123,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f27d1bb8a8f8c244399de75223154ee2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 0
+  Team: 0
+  _NetworkedPosition: {x: 0, y: 0, z: 0}
   currentX: 0
   currentY: 0
   type: 0
-  _NetworkedPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &-3492972097354928548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,22 +146,4 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: -5395859111733213134}
-  - {fileID: -1882609265475161352}
   ForceRemoteRenderTimeframe: 0
---- !u!114 &-1882609265475161352
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 125018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stateAuthorityChangeErrorCorrectionDelta: 0
-  SyncScale: 0
-  SyncParent: 0
-  _autoAOIOverride: 1
-  DisableSharedModeInterpolation: 0

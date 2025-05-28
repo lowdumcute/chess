@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 6407946}
   - component: {fileID: 7359136593341355859}
   - component: {fileID: 7644216271599317916}
-  - component: {fileID: -5213941044566229253}
   m_Layer: 0
   m_Name: Queen
   m_TagString: Untagged
@@ -124,11 +123,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 038ee6c0c6d422a4bbf94df5de5b94c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 0
+  Team: 0
+  _NetworkedPosition: {x: 0, y: 0, z: 0}
   currentX: 0
   currentY: 0
   type: 0
-  _NetworkedPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &7644216271599317916
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,22 +146,4 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 7359136593341355859}
-  - {fileID: -5213941044566229253}
   ForceRemoteRenderTimeframe: 0
---- !u!114 &-5213941044566229253
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 184594}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stateAuthorityChangeErrorCorrectionDelta: 0
-  SyncScale: 0
-  SyncParent: 0
-  _autoAOIOverride: 1
-  DisableSharedModeInterpolation: 0

@@ -14,7 +14,7 @@ public class Bishop : ChessPiece
                 r.Add(new Vector2Int(x, y));
             else
             {
-                if (board[x, y].team != team)
+                if (board[x, y].Team != Team)
                     r.Add(new Vector2Int(x, y));
                 break;
             }
@@ -27,7 +27,7 @@ public class Bishop : ChessPiece
                 r.Add(new Vector2Int(x, y));
             else
             {
-                if (board[x, y].team != team)
+                if (board[x, y].Team != Team)
                     r.Add(new Vector2Int(x, y));
                 break;
             }
@@ -39,7 +39,7 @@ public class Bishop : ChessPiece
                 r.Add(new Vector2Int(x, y));
             else
             {
-                if (board[x, y].team != team)
+                if (board[x, y].Team != Team)
                     r.Add(new Vector2Int(x, y));
                 break;
             }
@@ -51,7 +51,7 @@ public class Bishop : ChessPiece
                 r.Add(new Vector2Int(x, y));
             else
             {
-                if (board[x, y].team != team)
+                if (board[x, y].Team != Team)
                     r.Add(new Vector2Int(x, y));
                 break;
             }

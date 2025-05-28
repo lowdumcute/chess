@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 6410760}
   - component: {fileID: -7234525420007241304}
   - component: {fileID: -1795996520692940381}
-  - component: {fileID: 6237242290965686677}
   m_Layer: 0
   m_Name: Pawn
   m_TagString: Untagged
@@ -124,11 +123,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e403d7f6cf3731243a63c2949624347b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 0
+  Team: 0
+  _NetworkedPosition: {x: 0, y: 0, z: 0}
   currentX: 0
   currentY: 0
   type: 0
-  _NetworkedPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &-1795996520692940381
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,22 +146,4 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: -7234525420007241304}
-  - {fileID: 6237242290965686677}
   ForceRemoteRenderTimeframe: 0
---- !u!114 &6237242290965686677
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 138226}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _stateAuthorityChangeErrorCorrectionDelta: 0
-  SyncScale: 0
-  SyncParent: 0
-  _autoAOIOverride: 1
-  DisableSharedModeInterpolation: 0

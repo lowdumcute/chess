@@ -123,25 +123,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f3c05434ca65d8448bdc97ab23a072d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileMaterial: {fileID: 2100000, guid: 05c92d403a8bb7d448cf4b5aadbcc72b, type: 2}
-  tileSize: 1.5
-  yOffset: 0.1
-  boardCenter: {x: 0, y: 0, z: 0}
-  deathSize: 0.5
-  deathSpacing: 0.8
-  dragOffset: 1.5
-  VictoryScreen: {fileID: 0}
-  prefabs:
-  - {fileID: -1795996520692940381, guid: edd4f3477fd5a8b4599bf6c0dac39f1d, type: 3}
-  - {fileID: -3492972097354928548, guid: 9d3e9c36668dcfe44b524760a4c3a3b5, type: 3}
-  - {fileID: -4889049659339743334, guid: b6c7ad354ac474944ba26b2895a59759, type: 3}
-  - {fileID: -2962802810861180509, guid: a71fd906a2159e247ab4d632e46947db, type: 3}
-  - {fileID: 7644216271599317916, guid: 1f7a3b3d104b8e44cb39f5356ae1d0bb, type: 3}
-  - {fileID: 5856107568591403181, guid: 861e95a585868b643bf2e4a1d0ae63b7, type: 3}
+  piecePrefabs:
+  - RawGuidValue: edd4f3477fd5a8b4599bf6c0dac39f1d
+  - RawGuidValue: 9d3e9c36668dcfe44b524760a4c3a3b5
+  - RawGuidValue: b6c7ad354ac474944ba26b2895a59759
+  - RawGuidValue: a71fd906a2159e247ab4d632e46947db
+  - RawGuidValue: 1f7a3b3d104b8e44cb39f5356ae1d0bb
+  - RawGuidValue: 9d3e9c36668dcfe44b524760a4c3a3b5
   teamMaterials:
   - {fileID: 2100000, guid: 6b5cbfaaf00af414da1ba92bfba45fad, type: 2}
   - {fileID: 2100000, guid: 396cdf926824eb24eb21939ef664a558, type: 2}
-  runner: {fileID: 0}
+  yOffset: 0
+  tilePrefab: {fileID: 4593845050930981133, guid: 1510d6f98369e304fac7b0a95034667a, type: 3}
+  tileSize: 1.5
 --- !u!114 &3429597282696426469
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,7 +11,7 @@ public class King : ChessPiece
         {
             if (board[currentX + 1, currentY] == null)
                 r.Add(new Vector2Int(currentX + 1, currentY));
-            else if (board[currentX + 1, currentY].team != team)
+            else if (board[currentX + 1, currentY].Team != Team)
                 r.Add(new Vector2Int(currentX + 1, currentY));
 
             // top right
@@ -19,7 +19,7 @@ public class King : ChessPiece
             {
                 if (board[currentX + 1, currentY + 1] == null)
                     r.Add(new Vector2Int(currentX + 1, currentY + 1));
-                else if (board[currentX + 1, currentY + 1].team != team)
+                else if (board[currentX + 1, currentY + 1].Team != Team)
                     r.Add(new Vector2Int(currentX + 1, currentY + 1));
             }
             // bottom right
@@ -27,7 +27,7 @@ public class King : ChessPiece
             {
                 if (board[currentX + 1, currentY - 1] == null)
                     r.Add(new Vector2Int(currentX + 1, currentY - 1));
-                else if (board[currentX + 1, currentY - 1].team != team)
+                else if (board[currentX + 1, currentY - 1].Team != Team)
                     r.Add(new Vector2Int(currentX + 1, currentY - 1));
             }
         }
@@ -36,7 +36,7 @@ public class King : ChessPiece
         {
             if (board[currentX - 1, currentY] == null)
                 r.Add(new Vector2Int(currentX - 1, currentY));
-            else if (board[currentX - 1, currentY].team != team)
+            else if (board[currentX - 1, currentY].Team != Team)
                 r.Add(new Vector2Int(currentX - 1, currentY));
 
             // top left
@@ -44,7 +44,7 @@ public class King : ChessPiece
             {
                 if (board[currentX - 1, currentY + 1] == null)
                     r.Add(new Vector2Int(currentX - 1, currentY + 1));
-                else if (board[currentX - 1, currentY + 1].team != team)
+                else if (board[currentX - 1, currentY + 1].Team != Team)
                     r.Add(new Vector2Int(currentX - 1, currentY + 1));
             }
             // bottom left
@@ -52,7 +52,7 @@ public class King : ChessPiece
             {
                 if (board[currentX - 1, currentY - 1] == null)
                     r.Add(new Vector2Int(currentX - 1, currentY - 1));
-                else if (board[currentX - 1, currentY - 1].team != team)
+                else if (board[currentX - 1, currentY - 1].Team != Team)
                     r.Add(new Vector2Int(currentX - 1, currentY - 1));
             }
         }
@@ -62,7 +62,7 @@ public class King : ChessPiece
         {
             if (board[currentX, currentY + 1] == null)
                 r.Add(new Vector2Int(currentX, currentY + 1));
-            else if (board[currentX, currentY + 1].team != team)
+            else if (board[currentX, currentY + 1].Team != Team)
                 r.Add(new Vector2Int(currentX, currentY + 1));
         }
 
@@ -71,7 +71,7 @@ public class King : ChessPiece
         {
             if (board[currentX, currentY - 1] == null)
                 r.Add(new Vector2Int(currentX, currentY - 1));
-            else if (board[currentX, currentY - 1].team != team)
+            else if (board[currentX, currentY - 1].Team != Team)
                 r.Add(new Vector2Int(currentX, currentY - 1));
         }
 
