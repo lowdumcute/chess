@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 861e95a585868b643bf2e4a1d0ae63b7
+labels:
+- FusionPrefab
+- King
+- board
+- boardgame
+- chess
+- chessboard
+- game
+AssetOrigin:
+  serializedVersion: 1
+  productId: 50405
+  packageName: Low Poly Chess Pack
+  packageVersion: 1.2
+  assetPath: Assets/BrokenVector/LowpolyChessPack/Prefabs/Black King.prefab
+  uploadId: 253857
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

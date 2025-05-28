@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: b6c7ad354ac474944ba26b2895a59759
+labels:
+- FusionPrefab
+- Knight
+- board
+- boardgame
+- chess
+- chessboard
+- game
+AssetOrigin:
+  serializedVersion: 1
+  productId: 50405
+  packageName: Low Poly Chess Pack
+  packageVersion: 1.2
+  assetPath: Assets/BrokenVector/LowpolyChessPack/Prefabs/Black Knight.prefab
+  uploadId: 253857
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
