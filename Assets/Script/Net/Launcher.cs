@@ -41,6 +41,10 @@ public class Launcher : MonoBehaviour, INetworkRunnerCallbacks
         });
     }
 
+    public void SpawnBoard()
+    {
+        runner.Spawn(chessboardPrefab, Vector3.zero, Quaternion.identity);
+    }
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         if (runner.IsServer && runner.ActivePlayers.Count() == 2)

@@ -5,6 +5,7 @@ public class ChessGameManager : NetworkBehaviour
 
 {
     public static ChessGameManager Instance;
+    [SerializeField] private Launcher launcher; // Tham chiếu đến Launcher để reset game
     public GameObject ScreenResult;
     public TMP_Text ResultText; // Hiển thị kết quả trên UI
     public int myTeam; // 0 hoặc 1, gán từ Launcher hoặc UI
@@ -47,5 +48,12 @@ public class ChessGameManager : NetworkBehaviour
         Debug.Log("Defeat! You lose!");
         ScreenResult.SetActive(true);
         ResultText.text = "Defeat! You lose!";
+    }
+    public void ResetGame()
+    {
+        ScreenResult.SetActive(false);
+        if (!Runner.IsServer) return; // Chỉ server mới có quyền reset
+        ChessBoardNetworkSpawner.Instance.ResetBoard();
+        launcher.SpawnBoard();
     }
 }

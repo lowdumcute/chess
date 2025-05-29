@@ -94,4 +94,5 @@ public class GameUI : MonoBehaviour
     {
         return addressInput != null ? addressInput.text : string.Empty;
     }
+
 }

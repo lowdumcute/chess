@@ -37,7 +37,7 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
 
         if (Runner.IsServer)
         {
-            whitePlayer = Runner.LocalPlayer; // Host là trắng
+            whitePlayer = Runner.ActivePlayers.ElementAt(0);
             Debug.Log($"[Server] You are White: {whitePlayer}");
 
             // Chờ đến khi đủ người chơi để lấy blackPlayer
@@ -313,6 +313,22 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
         {
             Debug.LogWarning($"[Client] Could not find piece with id {pieceId}");
         }
+    }
+    public void ResetBoard()
+    {
+        // Xóa tất cả quân cờ
+        foreach (var piece in chessPieces)
+        {
+            if (piece != null)
+            {
+                Runner.Despawn(piece.Object);
+            }
+        }
+        Array.Clear(chessPieces, 0, chessPieces.Length);
+        currentTurnTeam = 0; // Reset lượt về trắng
+        Runner.Despawn(Object);
+        
+
     }
     
 }
