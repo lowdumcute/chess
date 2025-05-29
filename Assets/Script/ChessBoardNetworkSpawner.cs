@@ -1,7 +1,8 @@
 using System;
 using Fusion;
 using UnityEngine;
-using System.Linq;  
+using System.Linq;
+using System.Collections;
 public enum SpecialMove
 {
     None = 0,
@@ -15,39 +16,60 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
     public static ChessBoardNetworkSpawner Instance;
     [SerializeField] private NetworkPrefabRef[] piecePrefabs; // Theo thứ tự enum ChessPieceType
     [SerializeField] private Material[] teamMaterials; // 0 = trắng, 1 = đen
-
     [SerializeField] private float yOffset = 0.0f;
-
     [SerializeField] private GameObject tilePrefab;
     private GameObject[,] tiles = new GameObject[TILE_COUNT_X, TILE_COUNT_Y];
     [SerializeField] public float tileSize = 1.0f;
 
     private const int TILE_COUNT_X = 8;
     private const int TILE_COUNT_Y = 8;
-    private ChessPiece[,] chessPieces = new ChessPiece[TILE_COUNT_X, TILE_COUNT_Y];
+    [SerializeField] private ChessPiece[,] chessPieces = new ChessPiece[TILE_COUNT_X, TILE_COUNT_Y];
     public ChessPiece[,] GetChessPieces() => chessPieces;
-    [SerializeField] public  PlayerRef whitePlayer;
-    [SerializeField] public  PlayerRef blackPlayer;
-    [SerializeField] [Networked] public PlayerRef CurrentTurnPlayer { get; set; }
+    [SerializeField] public PlayerRef whitePlayer;
+    [SerializeField] public PlayerRef blackPlayer;
+    [SerializeField][Networked] public PlayerRef CurrentTurnPlayer { get; set; }
     [Networked, OnChangedRender(nameof(OnTurnChanged))] public int currentTurnTeam { get; set; } // thêm [Networked]
 
-    private void Awake()
+    IEnumerator CheckBoard()
     {
-        Instance = this;
+        yield return new WaitForSeconds(2f); // chờ cho sync
+
+        var allPieces = FindObjectsByType<ChessPiece>(FindObjectsSortMode.None);
+
+        Debug.Log($"[Client] Total ChessPiece found: {allPieces.Length}");
+
+        foreach (var piece in allPieces)
+        {
+            chessPieces[piece.currentX, piece.currentY] = piece;
+            Debug.Log($"[Client] Piece at ({piece.currentX},{piece.currentY}): {piece.type}, Team {piece.Team}");
+        }
     }
+
+
     public override void Spawned()
     {
-        CreateBoardTiles(); // Gọi ở cả Host và Client để có tile
+        Instance = this;
+        CreateBoardTiles(); // Gọi ở cả Host và Client để tạo tile bàn cờ
+
         if (Runner.IsServer)
         {
-            // Host (trắng) là player đầu tiên
+            // Gán player trắng là Host
             whitePlayer = Runner.LocalPlayer;
             currentTurnTeam = 0;
-            // Kiểm tra có đủ 2 người chơi
+
+            // Nếu đã đủ 2 người chơi, spawn quân cờ
             if (Runner.ActivePlayers.Count() > 1)
-                blackPlayer = Runner.ActivePlayers.ElementAt(1);
-            SpawnAllPieces(whitePlayer,blackPlayer);
-            CurrentTurnPlayer = whitePlayer; // 
+            {
+                SpawnAllPieces(whitePlayer, blackPlayer);
+                CurrentTurnPlayer = whitePlayer;
+            }
+        }
+        else // Là Client
+        {
+            blackPlayer = Runner.LocalPlayer;
+
+            // Đợi cho tile sinh xong và quân cờ (do host spawn) sync về, rồi mới rebuild lại ma trận
+            StartCoroutine(DelayedRebuild());
         }
     }
 
@@ -154,6 +176,11 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
         if (x < 0 || x >= TILE_COUNT_X || y < 0 || y >= TILE_COUNT_Y) return null;
         return chessPieces[x, y];
     }
+    public void SetPieceAt(int x, int y, ChessPiece piece)
+    {
+        chessPieces[x, y] = piece;
+    }
+
 
     public void MovePieceOnBoard(ChessPiece piece, int targetX, int targetY)
     {
@@ -166,8 +193,6 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
     private void OnTurnChanged()
     {
         Debug.Log("Turn changed to team: " + currentTurnTeam);
-        // Gọi UI cập nhật lượt chơi, ví dụ:
-        // UIManager.Instance.UpdateTurnIndicator(currentTurnTeam);
     }
     public void SwitchTurn()
     {
@@ -179,5 +204,20 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
         else
             CurrentTurnPlayer = blackPlayer;
     }
+    IEnumerator DelayedRebuild()
+    {
+        yield return new WaitForSeconds(2f);
+        RebuildBoardMap();
+    }
 
+    void RebuildBoardMap()
+    {
+        Array.Clear(chessPieces, 0, chessPieces.Length); // Clear cũ
+        var all = FindObjectsByType<ChessPiece>(FindObjectsSortMode.None);
+        foreach (var piece in all)
+        {
+            chessPieces[piece.currentX, piece.currentY] = piece;
+        }
+        Debug.Log($"[Client] Rebuilt board, total: {all.Length}");
+    }
 }

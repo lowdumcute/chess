@@ -17,9 +17,9 @@ public class ChessPiece : NetworkBehaviour
 {
     [Networked] public int Team { get; set;}
     [Networked] public Vector3 NetworkedPosition { get; set; }
-    public int currentX;
-    public int currentY;
-    public ChessPieceType type;
+    [Networked] public int currentX { get; set; }
+    [Networked] public int currentY { get; set; }
+    [Networked] public ChessPieceType type{ get; set; }
 
     private Vector3 desiredScale = Vector3.one;
 
@@ -33,7 +33,15 @@ public class ChessPiece : NetworkBehaviour
             NetworkedPosition = transform.position;
         }
     }
-
+    // Trong ChessPiece.cs (khi spawn xong)
+    public override void Spawned()
+    {
+        if (Object.HasStateAuthority) // hoặc HasInputAuthority tùy bạn muốn ai quản lý
+        {
+            ChessBoardNetworkSpawner.Instance.SetPieceAt(currentX , currentY, this);
+        }
+    }
+    
     private void Update()
     {
         if (!Object.HasStateAuthority)
