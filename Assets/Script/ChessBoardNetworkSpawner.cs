@@ -49,28 +49,41 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
     public override void Spawned()
     {
         Instance = this;
-        CreateBoardTiles(); // Gọi ở cả Host và Client để tạo tile bàn cờ
+        CreateBoardTiles();
 
         if (Runner.IsServer)
         {
-            // Gán player trắng là Host
             whitePlayer = Runner.LocalPlayer;
             currentTurnTeam = 0;
-
-            // Nếu đã đủ 2 người chơi, spawn quân cờ
-            if (Runner.ActivePlayers.Count() > 1)
-            {
-                SpawnAllPieces(whitePlayer, blackPlayer);
-                CurrentTurnPlayer = whitePlayer;
-            }
+            StartCoroutine(WaitForPlayersAndSpawn());
         }
-        else // Là Client
+        else
         {
             blackPlayer = Runner.LocalPlayer;
-
-            // Đợi cho tile sinh xong và quân cờ (do host spawn) sync về, rồi mới rebuild lại ma trận
             StartCoroutine(DelayedRebuild());
         }
+    }
+
+    IEnumerator WaitForPlayersAndSpawn()
+    {
+        // Chờ đến khi đủ 2 player
+        while (Runner.ActivePlayers.Count() < 2)
+        {
+            yield return null;
+        }
+
+        // Lấy Player thứ 2
+        foreach (var player in Runner.ActivePlayers)
+        {
+            if (player != whitePlayer)
+            {
+                blackPlayer = player;
+                break;
+            }
+        }
+
+        SpawnAllPieces(whitePlayer, blackPlayer);
+        CurrentTurnPlayer = whitePlayer;
     }
 
 
@@ -184,10 +197,20 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
 
     public void MovePieceOnBoard(ChessPiece piece, int targetX, int targetY)
     {
-        chessPieces[piece.currentX, piece.currentY] = null;
+        int oldX = piece.currentX;
+        int oldY = piece.currentY;
+
+        // Cập nhật local
+        chessPieces[oldX, oldY] = null;
         piece.currentX = targetX;
         piece.currentY = targetY;
         chessPieces[targetX, targetY] = piece;
+
+        // Gửi RPC cho client cập nhật tương ứng
+        if (Runner.IsServer)
+        {
+            RPC_UpdateBoardMap(piece.Id, oldX, oldY, targetX, targetY);
+        }
     }
     //phù hợp cho logic gameplay (như bật/tắt AI, trigger hiệu ứng, v.v.).
     private void OnTurnChanged()
@@ -220,4 +243,33 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
         }
         Debug.Log($"[Client] Rebuilt board, total: {all.Length}");
     }
+    public Vector2Int WorldToBoardCoords(Vector3 worldPos)
+    {
+        float boardWidth = TILE_COUNT_X * tileSize;
+        float boardHeight = TILE_COUNT_Y * tileSize;
+        Vector3 origin = transform.position - new Vector3(boardWidth, 0, boardHeight) * 0.5f + new Vector3(tileSize, 0, tileSize) * 0.5f;
+
+        int x = Mathf.FloorToInt((worldPos.x - origin.x + tileSize * 0.5f) / tileSize);
+        int y = Mathf.FloorToInt((worldPos.z - origin.z + tileSize * 0.5f) / tileSize);
+
+        x = Mathf.Clamp(x, 0, TILE_COUNT_X - 1);
+        y = Mathf.Clamp(y, 0, TILE_COUNT_Y - 1);
+
+        return new Vector2Int(x, y);
+    }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_UpdateBoardMap(NetworkBehaviourId pieceId, int oldX, int oldY, int newX, int newY)
+    {
+        if (Runner.TryFindBehaviour(pieceId, out ChessPiece piece))
+        {
+            chessPieces[oldX, oldY] = null;
+            chessPieces[newX, newY] = piece;
+            Debug.Log($"[Client] Updated board: moved {piece.type} from ({oldX},{oldY}) to ({newX},{newY})");
+        }
+        else
+        {
+            Debug.LogWarning($"[Client] Could not find piece with id {pieceId}");
+        }
+    }
+
 }

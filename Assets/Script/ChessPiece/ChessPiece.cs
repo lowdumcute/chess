@@ -120,21 +120,16 @@ public class ChessPiece : NetworkBehaviour
     {
         // Kiểm tra quyền (nếu muốn), ví dụ chỉ di chuyển khi đúng lượt...
         bool canMove = ChessBoardNetworkSpawner.Instance.currentTurnTeam == Team;
-        if (!HasInputAuthority)
-        {
-            Debug.LogWarning("Client không có quyền điều khiển quân này.");
-            return;
-        }
 
         if (canMove)
         {
             Debug.Log($"[RPC_RequestMove] Moving piece {name} to {targetPosition}");
 
-            // Thực hiện di chuyển, cập nhật position cho networked state
             SetPosition(targetPosition, force: true);
 
-            // Nếu cần, có thể gọi thêm các hàm logic khác như cập nhật board...
-            ChessBoardNetworkSpawner.Instance.MovePieceOnBoard(this, currentX, currentY); // Cập nhật logic bảng cờ, nếu có
+            // Tính lại vị trí ô cờ mới dựa trên targetPosition
+            Vector2Int newCoords = ChessBoardNetworkSpawner.Instance.WorldToBoardCoords(targetPosition);
+            ChessBoardNetworkSpawner.Instance.MovePieceOnBoard(this, newCoords.x, newCoords.y);
 
             // Chuyển lượt
             ChessBoardNetworkSpawner.Instance.currentTurnTeam = 1 - ChessBoardNetworkSpawner.Instance.currentTurnTeam;

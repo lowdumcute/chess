@@ -129,13 +129,14 @@ MonoBehaviour:
   - RawGuidValue: b6c7ad354ac474944ba26b2895a59759
   - RawGuidValue: a71fd906a2159e247ab4d632e46947db
   - RawGuidValue: 1f7a3b3d104b8e44cb39f5356ae1d0bb
-  - RawGuidValue: 9d3e9c36668dcfe44b524760a4c3a3b5
+  - RawGuidValue: 861e95a585868b643bf2e4a1d0ae63b7
   teamMaterials:
   - {fileID: 2100000, guid: 6b5cbfaaf00af414da1ba92bfba45fad, type: 2}
   - {fileID: 2100000, guid: 396cdf926824eb24eb21939ef664a558, type: 2}
   yOffset: 0
   tilePrefab: {fileID: 4593845050930981133, guid: 1510d6f98369e304fac7b0a95034667a, type: 3}
   tileSize: 1.5
+  _currentTurnTeam: 0
 --- !u!114 &3429597282696426469
 MonoBehaviour:
   m_ObjectHideFlags: 0

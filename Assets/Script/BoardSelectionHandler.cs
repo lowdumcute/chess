@@ -48,20 +48,20 @@ public class BoardSelectionHandler : MonoBehaviour
                 ChessPiece clickedPiece = ChessBoardNetworkSpawner.Instance.GetPieceAt(coord.x, coord.y);
                 Debug.Log($"was clicked in {clickedPiece},");
 
-                // ở client  đang lỗi không thể gọi từ khúc này trở xuống 
                 if (clickedPiece != null )
                 {
                     Debug.Log("SelectPiece");
                     SelectPiece(clickedPiece, coord);
+                    
                 }
-                else if (selectedPiece != null && availableMoves.Contains(coord))
-                {
-                    MoveSelectedPieceTo(coord);
-                }
-                else if (clickedPiece == null)
-                {
-                    Debug.Log("đéo có quân cờ nào");
-                }
+                    else if (selectedPiece != null && availableMoves.Contains(coord))
+                    {
+                        MoveSelectedPieceTo(coord);
+                    }
+                    else if (clickedPiece == null)
+                    {
+                        Debug.Log("đéo có quân cờ nào");
+                    }
             }
         }
         else
@@ -101,7 +101,14 @@ public class BoardSelectionHandler : MonoBehaviour
         Vector3 targetPos = ChessBoardNetworkSpawner.Instance.GetTileCenter(targetCoord.x, targetCoord.y);
 
         // Gọi RPC từ client lên server/state authority để yêu cầu di chuyển
-        selectedPiece.RPC_RequestMove(targetPos);
+        if (selectedPiece.HasInputAuthority)
+        {
+            selectedPiece.RPC_RequestMove(targetPos);
+        }
+        else
+        {
+            Debug.LogWarning("Client không có quyền gửi yêu cầu di chuyển quân cờ này.");
+        }
 
         // Việc đó sẽ do bên StateAuthority xử lý trong RPC_RequestMove
 
@@ -109,6 +116,7 @@ public class BoardSelectionHandler : MonoBehaviour
         availableMoves.Clear();
         ClearMoveHighlights();
     }
+
 
     void SetMaterial(GameObject obj, Material mat)
     {
