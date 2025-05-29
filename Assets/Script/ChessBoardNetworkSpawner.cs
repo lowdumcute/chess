@@ -51,10 +51,15 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
                 whitePlayer = Runner.ActivePlayers.ElementAt(0);
                 blackPlayer = Runner.ActivePlayers.ElementAt(1);
 
-                if (Runner.LocalPlayer == whitePlayer)
+                if (Runner.LocalPlayer == Runner.ActivePlayers.ElementAt(0))
+                {
                     Debug.Log($"[Client] You are White: {Runner.LocalPlayer}");
-                else if (Runner.LocalPlayer == blackPlayer)
+                }
+                else if (Runner.LocalPlayer == Runner.ActivePlayers.ElementAt(1))
+                {
                     Debug.Log($"[Client] You are Black: {Runner.LocalPlayer}");
+                }
+
                 else
                     Debug.LogWarning($"[Client] Local player không khớp với white hoặc black.");
             }
@@ -202,6 +207,7 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
 
     public void MovePieceOnBoard(ChessPiece piece, int targetX, int targetY)
     {
+        AudioManager.Instance.PlaySFX("Drag", transform.position);
         int oldX = piece.currentX;
         int oldY = piece.currentY;
 
@@ -268,6 +274,12 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
         var targetPiece = chessPieces[targetX, targetY];
         if (targetPiece != null)
         {
+            // Nếu quân bị ăn là vua => kết thúc game
+            if (targetPiece.type == ChessPieceType.King)
+            {
+                int winningTeam = 1 - targetPiece.Team; // Nếu team vua là 0 thì team 1 thắng, ngược lại
+                ChessGameManager.Instance.DeclareVictory(winningTeam);
+            }
             // Xóa khỏi mảng
             chessPieces[targetX, targetY] = null;
 

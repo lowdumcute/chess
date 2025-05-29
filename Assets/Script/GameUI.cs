@@ -39,11 +39,13 @@ public class GameUI : MonoBehaviour
 
     public void OnOnlineGameButton()
     {
+        AudioManager.Instance.PlaySFX("Click", transform.position);
         menuAnimator.SetTrigger("OnlineMenu");
     }
 
     public void OnOnlineHostButton()
     {
+        AudioManager.Instance.PlaySFX("Click", transform.position);
         if (launcher != null)
         {
             launcher.StartAsHost();
@@ -57,6 +59,7 @@ public class GameUI : MonoBehaviour
 
     public void OnOnlineConnectButton()
     {
+        AudioManager.Instance.PlaySFX("Click", transform.position);
         menuAnimator.SetTrigger("HostMenu");
         if (launcher != null)
         {
@@ -70,16 +73,19 @@ public class GameUI : MonoBehaviour
 
     public void OnOnlineBackButton()
     {
+        AudioManager.Instance.PlaySFX("Click", transform.position);
         menuAnimator.SetTrigger("StartMenu");
     }
 
     public void OnHostBackButton()
     {
+        AudioManager.Instance.PlaySFX("Click", transform.position);
         menuAnimator.SetTrigger("OnlineMenu");
     }
 
     public void OnGame()
     {
+        AudioManager.Instance.PlaySFX("Click", transform.position);
         menuAnimator.SetTrigger("InGameMenu");
     }
 

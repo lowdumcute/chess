@@ -16,11 +16,13 @@ public class Launcher : MonoBehaviour, INetworkRunnerCallbacks
 
     public void StartAsHost()
     {
+        ChessGameManager.Instance.myTeam = 0; // Gán team cho host
         StartGame(GameMode.Host);
     }
 
     public void StartAsClient()
     {
+        ChessGameManager.Instance.myTeam = 1; // Gán team cho client
         StartGame(GameMode.Client);
     }
 
