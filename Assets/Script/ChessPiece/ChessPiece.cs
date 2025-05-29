@@ -1,7 +1,6 @@
 using Fusion;
 using UnityEngine;
 using System.Collections.Generic;
-using Fusion.Analyzer;
 public enum ChessPieceType
 {
     None = 0,
@@ -125,20 +124,29 @@ public class ChessPiece : NetworkBehaviour
         {
             Debug.Log($"[RPC_RequestMove] Moving piece {name} to {targetPosition}");
 
-            SetPosition(targetPosition, force: true);
-
             // Tính lại vị trí ô cờ mới dựa trên targetPosition
             Vector2Int newCoords = ChessBoardNetworkSpawner.Instance.WorldToBoardCoords(targetPosition);
-            ChessBoardNetworkSpawner.Instance.MovePieceOnBoard(this, newCoords.x, newCoords.y);
+            int targetX = newCoords.x;
+            int targetY = newCoords.y;
+
+            // Kiểm tra xem có quân địch ở đó không và ăn
+            var targetPiece = ChessBoardNetworkSpawner.Instance.GetPieceAt(targetX, targetY);
+            if (targetPiece != null && targetPiece.Team != this.Team)
+            {
+                ChessBoardNetworkSpawner.Instance.CapturePiece(targetX, targetY);
+            }
+
+            // Di chuyển quân cờ
+            SetPosition(targetPosition, force: true);
+            ChessBoardNetworkSpawner.Instance.MovePieceOnBoard(this, targetX, targetY);
 
             // Chuyển lượt
-            ChessBoardNetworkSpawner.Instance.currentTurnTeam = 1 - ChessBoardNetworkSpawner.Instance.currentTurnTeam;
+            ChessBoardNetworkSpawner.Instance.SwitchTurn();
         }
         else
         {
             Debug.LogWarning($"Player không được phép di chuyển quân cờ này hoặc không đúng lượt.");
         }
     }
-
 }
 

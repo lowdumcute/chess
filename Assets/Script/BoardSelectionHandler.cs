@@ -1,19 +1,35 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using Fusion;
 
 public class BoardSelectionHandler : MonoBehaviour
 {
     [SerializeField] private Material defaultMaterial;
     [SerializeField] private Material highlightMaterial;
     [SerializeField] private Material moveHighlightMaterial;
-
+    private NetworkRunner Runner;
     private Camera currentCamera;
     private GameObject currentHoveredTile;
     private ChessPiece selectedPiece;
     private List<Vector2Int> availableMoves = new();
     private List<GameObject> moveIndicators = new();
 
+    private void Awake()
+    {
+        Runner = FindAnyObjectByType<NetworkRunner>();
+        if (Runner == null)
+        {
+            Debug.LogError("NetworkRunner not found in the scene!");
+            return;
+        }
+
+        currentCamera = Camera.main;
+        if (currentCamera == null)
+        {
+            Debug.LogError("Main camera not found!");
+        }
+    }
     private void Update()
     {
         if (currentCamera == null)
@@ -48,7 +64,7 @@ public class BoardSelectionHandler : MonoBehaviour
                 ChessPiece clickedPiece = ChessBoardNetworkSpawner.Instance.GetPieceAt(coord.x, coord.y);
                 Debug.Log($"was clicked in {clickedPiece},");
 
-                if (clickedPiece != null )
+                if (clickedPiece != null && clickedPiece.HasInputAuthority)
                 {
                     Debug.Log("SelectPiece");
                     SelectPiece(clickedPiece, coord);

@@ -30,22 +30,6 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
     [SerializeField][Networked] public PlayerRef CurrentTurnPlayer { get; set; }
     [Networked, OnChangedRender(nameof(OnTurnChanged))] public int currentTurnTeam { get; set; } // thêm [Networked]
 
-    IEnumerator CheckBoard()
-    {
-        yield return new WaitForSeconds(2f); // chờ cho sync
-
-        var allPieces = FindObjectsByType<ChessPiece>(FindObjectsSortMode.None);
-
-        Debug.Log($"[Client] Total ChessPiece found: {allPieces.Length}");
-
-        foreach (var piece in allPieces)
-        {
-            chessPieces[piece.currentX, piece.currentY] = piece;
-            Debug.Log($"[Client] Piece at ({piece.currentX},{piece.currentY}): {piece.type}, Team {piece.Team}");
-        }
-    }
-
-
     public override void Spawned()
     {
         Instance = this;
@@ -53,16 +37,37 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
 
         if (Runner.IsServer)
         {
-            whitePlayer = Runner.LocalPlayer;
-            currentTurnTeam = 0;
+            whitePlayer = Runner.LocalPlayer; // Host là trắng
+            Debug.Log($"[Server] You are White: {whitePlayer}");
+
+            // Chờ đến khi đủ người chơi để lấy blackPlayer
             StartCoroutine(WaitForPlayersAndSpawn());
         }
         else
         {
-            blackPlayer = Runner.LocalPlayer;
+            // Client: Xác định white/black dựa theo danh sách ActivePlayers
+            if (Runner.ActivePlayers.Count() >= 2)
+            {
+                whitePlayer = Runner.ActivePlayers.ElementAt(0);
+                blackPlayer = Runner.ActivePlayers.ElementAt(1);
+
+                if (Runner.LocalPlayer == whitePlayer)
+                    Debug.Log($"[Client] You are White: {Runner.LocalPlayer}");
+                else if (Runner.LocalPlayer == blackPlayer)
+                    Debug.Log($"[Client] You are Black: {Runner.LocalPlayer}");
+                else
+                    Debug.LogWarning($"[Client] Local player không khớp với white hoặc black.");
+            }
+            else
+            {
+                Debug.LogWarning("[Client] Không đủ 2 người chơi để gán white và black.");
+            }
+
             StartCoroutine(DelayedRebuild());
         }
     }
+
+
 
     IEnumerator WaitForPlayersAndSpawn()
     {
@@ -257,6 +262,32 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
 
         return new Vector2Int(x, y);
     }
+    // ăn quân cờ
+    public void CapturePiece(int targetX, int targetY)
+    {
+        var targetPiece = chessPieces[targetX, targetY];
+        if (targetPiece != null)
+        {
+            // Xóa khỏi mảng
+            chessPieces[targetX, targetY] = null;
+
+            // Hủy object
+            Runner.Despawn(targetPiece.Object);
+
+            // Gửi RPC cho client update
+            RPC_UpdateBoardMap_Remove(targetX, targetY);
+
+            Debug.Log($"[Server] Captured piece at ({targetX},{targetY})");
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_UpdateBoardMap_Remove(int x, int y)
+    {
+        chessPieces[x, y] = null;
+        Debug.Log($"[Client] Removed piece at ({x},{y})");
+    }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_UpdateBoardMap(NetworkBehaviourId pieceId, int oldX, int oldY, int newX, int newY)
     {
@@ -271,5 +302,5 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
             Debug.LogWarning($"[Client] Could not find piece with id {pieceId}");
         }
     }
-
+    
 }
