@@ -100,7 +100,6 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
     public void SpawnAllPieces(PlayerRef whitePlayer, PlayerRef blackPlayer)
     {
         int white = 0, black = 1;
-
         // Quân trắng (bottom)
         SpawnBackRow(0, white, whitePlayer);
         SpawnPawns(1, white, whitePlayer);
@@ -227,12 +226,13 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
     private void OnTurnChanged()
     {
         Debug.Log("Turn changed to team: " + currentTurnTeam);
+        TurnGame.Instance.CheckTurn();
     }
     public void SwitchTurn()
     {
         Debug.Log("Switch Turn");
         currentTurnTeam = 1 - currentTurnTeam;
-
+        TurnGame.Instance.CheckTurn();
         if (currentTurnTeam == 0)
             CurrentTurnPlayer = whitePlayer;
         else

@@ -26,7 +26,7 @@ public class ChessGameManager : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_ShowVictory(int winningTeam)
     {
-        // Hiển thị UI thắng thua ở đây, ví dụ:
+        TurnGame.Instance.AddPointToPlayer(winningTeam);
         if (winningTeam == myTeam)
         {
             ShowVictoryScreen();
@@ -56,4 +56,11 @@ public class ChessGameManager : NetworkBehaviour
         ChessBoardNetworkSpawner.Instance.ResetBoard();
         launcher.SpawnBoard();
     }
+    public void KickPlayer()
+    {
+        if (!Object.HasStateAuthority) return; // Chỉ host có quyền
+
+        Runner.Disconnect(ChessBoardNetworkSpawner.Instance.blackPlayer); // Ngắt kết nối client này
+    }
+
 }
