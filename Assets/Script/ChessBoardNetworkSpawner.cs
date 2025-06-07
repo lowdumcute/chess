@@ -28,7 +28,8 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
     [SerializeField] public PlayerRef whitePlayer;
     [SerializeField] public PlayerRef blackPlayer;
     [SerializeField][Networked] public PlayerRef CurrentTurnPlayer { get; set; }
-    [Networked, OnChangedRender(nameof(OnTurnChanged))] public int currentTurnTeam { get; set; } // thêm [Networked]
+    [Networked, OnChangedRender(nameof(OnTurnChanged))] public int currentTurnTeam { get; set; }
+    [SerializeField] NetworkPrefabRef Vfxprefabs;
 
     public override void Spawned()
     {
@@ -274,12 +275,14 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
         var targetPiece = chessPieces[targetX, targetY];
         if (targetPiece != null)
         {
+            Runner.Spawn(Vfxprefabs, targetPiece.transform.position, Quaternion.identity);
             // Nếu quân bị ăn là vua => kết thúc game
             if (targetPiece.type == ChessPieceType.King)
             {
                 int winningTeam = 1 - targetPiece.Team; // Nếu team vua là 0 thì team 1 thắng, ngược lại
                 ChessGameManager.Instance.DeclareVictory(winningTeam);
             }
+
             // Xóa khỏi mảng
             chessPieces[targetX, targetY] = null;
 

@@ -137,6 +137,8 @@ MonoBehaviour:
   tilePrefab: {fileID: 4593845050930981133, guid: 1510d6f98369e304fac7b0a95034667a, type: 3}
   tileSize: 1.5
   _currentTurnTeam: 0
+  Vfxprefabs:
+    RawGuidValue: 99bc28c0d45f51c4fbac01080b73edc7
 --- !u!114 &3429597282696426469
 MonoBehaviour:
   m_ObjectHideFlags: 0

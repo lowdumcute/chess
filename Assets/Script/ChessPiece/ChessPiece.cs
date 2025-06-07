@@ -152,13 +152,14 @@ public class ChessPiece : NetworkBehaviour
             Debug.LogWarning($"Player không được phép di chuyển quân cờ này hoặc không đúng lượt.");
         }
     }
+    
     private IEnumerator AnimateMove(Vector3 targetPos)
     {
         Vector3 startPos = transform.position;
         float duration = 0.5f;
         float elapsed = 0f;
 
-        float liftHeight = 1f; // Độ cao nhấc lên
+        float liftHeight = 0.2f; // Độ cao nhấc lên
 
         while (elapsed < duration)
         {
