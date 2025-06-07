@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class GameUI : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class GameUI : MonoBehaviour
     [SerializeField] private Launcher launcher; // Gán trong Inspector hoặc tìm tự động
     [SerializeField] private Animator menuAnimator;
     [SerializeField] private TMP_InputField addressInput;
+    public Button BackButton;
 
     private void Awake()
     {
@@ -28,6 +30,7 @@ public class GameUI : MonoBehaviour
                 Debug.LogError("Launcher not found in scene!");
             }
         }
+        BackButton.gameObject.SetActive(false);
     }
 
     // Các hàm gọi launcher vẫn giữ nguyên, có thể gọi launcher từ đây
@@ -87,6 +90,23 @@ public class GameUI : MonoBehaviour
     {
         AudioManager.Instance.PlaySFX("Click", transform.position);
         menuAnimator.SetTrigger("InGameMenu");
+        BackButton.gameObject.SetActive(true);
+    }
+    public void BackMainMenu()
+    {
+        AudioManager.Instance.PlaySFX("Click", transform.position);
+
+        if (launcher != null && launcher.runner != null)
+        {
+            launcher.runner.Shutdown(); // Fusion sẽ tự gọi OnDisconnectedFromServer khi xong
+            BackButton.gameObject.SetActive(false);
+            menuAnimator.SetTrigger("StartMenu");
+        }
+        else
+        {
+            // Nếu chưa kết nối, quay lại menu ngay
+            OnOnlineBackButton();
+        }
     }
 
     // Nếu muốn dùng addressInput để lấy địa chỉ IP hoặc server:

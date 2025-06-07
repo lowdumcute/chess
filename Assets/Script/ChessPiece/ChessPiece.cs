@@ -1,6 +1,7 @@
 using Fusion;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 public enum ChessPieceType
 {
     None = 0,
@@ -14,12 +15,12 @@ public enum ChessPieceType
 
 public class ChessPiece : NetworkBehaviour
 {
-    [Networked] public int Team { get; set;}
+    [Networked] public int Team { get; set; }
     [Networked] public Vector3 NetworkedPosition { get; set; }
     [Networked] public int currentX { get; set; }
     [Networked] public int currentY { get; set; }
-    [Networked] public ChessPieceType type{ get; set; }
-
+    [Networked] public ChessPieceType type { get; set; }
+    private Coroutine moveCoroutine;
     private Vector3 desiredScale = Vector3.one;
 
     private void Start()
@@ -37,18 +38,18 @@ public class ChessPiece : NetworkBehaviour
     {
         if (Object.HasStateAuthority) // hoặc HasInputAuthority tùy bạn muốn ai quản lý
         {
-            ChessBoardNetworkSpawner.Instance.SetPieceAt(currentX , currentY, this);
+            ChessBoardNetworkSpawner.Instance.SetPieceAt(currentX, currentY, this);
         }
     }
-    
+
     private void Update()
     {
         if (!Object.HasStateAuthority)
         {
-            transform.position = Vector3.Lerp(transform.position, NetworkedPosition, Time.deltaTime * 15f);
+            transform.position = Vector3.Lerp(transform.position, NetworkedPosition, Time.deltaTime * 30f);
         }
 
-        transform.localScale = Vector3.Lerp(transform.localScale, desiredScale, Time.deltaTime * 10f);
+        transform.localScale = Vector3.Lerp(transform.localScale, desiredScale, Time.deltaTime * 30f);
     }
 
 
@@ -66,7 +67,7 @@ public class ChessPiece : NetworkBehaviour
 
     public virtual List<Vector2Int> GetAvailableMoves(ref ChessPiece[,] board, int tileCountX, int tileCountY)
     {
-        return new List<Vector2Int> {   };
+        return new List<Vector2Int> { };
     }
 
     public virtual SpecialMove GetSpecialMoves(ref ChessPiece[,] board, ref List<Vector2Int[]> moveList, ref List<Vector2Int> AvaibleMoves)
@@ -83,7 +84,10 @@ public class ChessPiece : NetworkBehaviour
 
         if (force)
         {
-            transform.position = position; // Cho host và client đều cập nhật
+            if (moveCoroutine != null)
+                StopCoroutine(moveCoroutine);
+
+            moveCoroutine = StartCoroutine(AnimateMove(position));
         }
     }
 
@@ -148,5 +152,28 @@ public class ChessPiece : NetworkBehaviour
             Debug.LogWarning($"Player không được phép di chuyển quân cờ này hoặc không đúng lượt.");
         }
     }
-}
+    private IEnumerator AnimateMove(Vector3 targetPos)
+    {
+        Vector3 startPos = transform.position;
+        float duration = 0.5f;
+        float elapsed = 0f;
 
+        float liftHeight = 1f; // Độ cao nhấc lên
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+
+            // Lerp vị trí theo dạng parabol: đi lên và hạ xuống
+            Vector3 midPos = Vector3.Lerp(startPos, targetPos, t);
+            midPos.y += Mathf.Sin(t * Mathf.PI) * liftHeight; // parabol nâng lên
+
+            transform.position = midPos;
+            yield return null;
+        }
+
+        transform.position = targetPos;
+    }
+
+}
