@@ -146,7 +146,7 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
         }
     }
 
-    private void SpawnSinglePiece(ChessPieceType type, int team, int x, int y, PlayerRef authority)
+    public void SpawnSinglePiece(ChessPieceType type, int team, int x, int y, PlayerRef authority)
     {
         Vector3 spawnPos = GetTileCenter(x, y);
         Quaternion rotation = Quaternion.LookRotation(team == 0 ? Vector3.back : Vector3.forward);
@@ -295,7 +295,22 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
             Debug.Log($"[Server] Captured piece at ({targetX},{targetY})");
         }
     }
+    // Xử lý promotion, gọi UI để người chơi chọn quân muốn promote
+    public void HandlePromotion(ChessPiece pawn)
+    {
+        RPC_ShowPromotionUI(pawn.Id, pawn.Object.InputAuthority);
+    }
 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_ShowPromotionUI(NetworkBehaviourId pawnId, PlayerRef targetPlayer)
+    {
+        if (Runner.LocalPlayer != targetPlayer) return;
+
+        if (Runner.TryFindBehaviour(pawnId, out ChessPiece pawn))
+        {
+            PromotionUI.Instance.Show(pawn);
+        }
+    }
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_UpdateBoardMap_Remove(int x, int y)
     {
@@ -330,7 +345,6 @@ public class ChessBoardNetworkSpawner : NetworkBehaviour
         Array.Clear(chessPieces, 0, chessPieces.Length);
         currentTurnTeam = 0; // Reset lượt về trắng
         Runner.Despawn(Object);
-        
 
     }
     

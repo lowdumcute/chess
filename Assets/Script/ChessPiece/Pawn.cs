@@ -72,4 +72,8 @@ public class Pawn : ChessPiece
 
         return SpecialMove.None;
     }
+    public bool CanPromote(int targetY)
+    {
+        return (Team == 0 && targetY == 7) || (Team == 1 && targetY == 0);
+    }
 }

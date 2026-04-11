@@ -143,7 +143,15 @@ public class ChessPiece : NetworkBehaviour
             // Di chuyển quân cờ
             SetPosition(targetPosition, force: true);
             ChessBoardNetworkSpawner.Instance.MovePieceOnBoard(this, targetX, targetY);
-
+            // check promotion
+            if (type == ChessPieceType.Pawn)
+            {
+                if ((Team == 0 && targetY == 7) || (Team == 1 && targetY == 0))
+                {
+                    ChessBoardNetworkSpawner.Instance.HandlePromotion(this);
+                    return;
+                }
+            }
             // Chuyển lượt
             ChessBoardNetworkSpawner.Instance.SwitchTurn();
         }
@@ -176,5 +184,23 @@ public class ChessPiece : NetworkBehaviour
 
         transform.position = targetPos;
     }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestPromotion(ChessPieceType newType)
+    {
+        var board = ChessBoardNetworkSpawner.Instance;
 
+        int x = currentX;
+        int y = currentY;
+        int team = Team;
+        PlayerRef owner = Object.InputAuthority;
+
+        // xóa pawn
+        board.Runner.Despawn(Object);
+
+        // spawn quân mới
+        board.SpawnSinglePiece(newType, team, x, y, owner);
+
+        // đổi lượt
+        board.SwitchTurn();
+    }
 }
