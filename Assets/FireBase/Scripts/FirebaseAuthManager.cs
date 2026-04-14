@@ -1,62 +1,99 @@
 using UnityEngine;
 using Firebase;
 using Firebase.Auth;
+using Firebase.Firestore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 public class FirebaseAuthManager : MonoBehaviour
 {
     public static FirebaseAuthManager Instance;
-    private FirebaseAuth auth;
 
-    void Start()
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private bool isReady = false;
+
+    async void Start()
     {
         Instance = this;
 
-        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
+        var dependencyStatus = await FirebaseApp.CheckAndFixDependenciesAsync();
+
+        if (dependencyStatus == DependencyStatus.Available)
         {
-            if (task.Result == DependencyStatus.Available)
-            {
-                auth = FirebaseAuth.DefaultInstance;
-                Debug.Log("Firebase Ready");
-            }
-            else
-            {
-                Debug.LogError("Firebase lỗi: " + task.Result);
-            }
-        });
+            auth = FirebaseAuth.DefaultInstance;
+            db = FirebaseFirestore.DefaultInstance;
+            isReady = true;
+            Debug.Log("Firebase Ready");
+        }
+        else
+        {
+            Debug.LogError("Firebase lỗi: " + dependencyStatus);
+        }
     }
 
-    // ĐĂNG KÝ
-    public void Register(string email, string password)
+    // ================= REGISTER =================
+    public async void Register(string email, string password, string username)
     {
-        auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task =>
+        if (!isReady)
         {
-            if (task.IsCanceled || task.IsFaulted)
+            Debug.LogError("Firebase chưa sẵn sàng!");
+            return;
+        }
+
+        try
+        {
+            //  Check username
+            var querySnapshot = await db.Collection("users")
+                                        .WhereEqualTo("username", username)
+                                        .GetSnapshotAsync();
+
+            if (querySnapshot.Count > 0)
             {
-                Debug.LogError("Đăng ký lỗi");
+                Debug.LogError("Username đã tồn tại!");
                 return;
             }
+
+            //  Tạo account
+            var result = await auth.CreateUserWithEmailAndPasswordAsync(email, password);
+            FirebaseUser newUser = result.User;
+
+            //  Lưu Firestore
+            var userData = new Dictionary<string, object>()
+            {
+                { "username", username },
+                { "email", email }
+            };
+
+            await db.Collection("users")
+                    .Document(newUser.UserId)
+                    .SetAsync(userData);
 
             Debug.Log("Đăng ký thành công!");
-        });
-    }
-
-    // ĐĂNG NHẬP
-    public void Login(string email, string password)
-    {
-        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(task =>
+            LoginController.Instance.LoginPanel();
+        }
+        catch (System.Exception e)
         {
-            if (task.IsCanceled || task.IsFaulted)
-            {
-                Debug.LogError("Đăng nhập thất bại");
-                return;
-            }
-
-            Debug.Log("Đăng nhập thành công!");
-        });
+            Debug.LogError("Register lỗi: " + e);
+        }
     }
 
-    // ĐĂNG XUẤT
+    // ================= LOGIN =================
+    public async void Login(string email, string password)
+    {
+        try
+        {
+            var result = await auth.SignInWithEmailAndPasswordAsync(email, password);
+            Debug.Log("Đăng nhập thành công!");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Login lỗi: " + e);
+        }
+    }
+
+    // ================= LOGOUT =================
     public void Logout()
     {
         auth.SignOut();
