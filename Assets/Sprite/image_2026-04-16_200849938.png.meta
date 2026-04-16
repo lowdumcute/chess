@@ -1,12 +1,5 @@
 fileFormatVersion: 2
-guid: 6a4f3f9bc674f824e9d0b609b3f53406
-AssetOrigin:
-  serializedVersion: 1
-  productId: 184903
-  packageName: Simple Button Set 02
-  packageVersion: 1.0
-  assetPath: Assets/TWD/FreeButtonSet/Textures/buttons/button_150_inactive.png
-  uploadId: 405951
+guid: 8bc039e956d2598409b232f994f0643e
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -46,7 +39,7 @@ TextureImporter:
     mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -56,7 +49,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 30, y: 30, z: 30, w: 30}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -72,7 +65,7 @@ TextureImporter:
   ignorePngGamma: 0
   applyGammaDecoding: 0
   swizzle: 50462976
-  cookieLightType: 1
+  cookieLightType: 0
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
@@ -117,23 +110,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: button_150_inactive_0
+      name: image_2026-04-16_200849938_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 150
-        height: 150
+        x: 740
+        y: 2410
+        width: 370
+        height: 370
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 25, y: 25, z: 25, w: 25}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 04f34da5c414e2c40898061e4c9d1496
-      internalID: -743713112
+      spriteID: 7f94c77f25944dc45a94ae377e2f90f4
+      internalID: 385968327
       vertices: []
       indices: 
       edges: []
@@ -142,7 +135,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: cce5cd9d2bd5a9c4c9d862eb222e159c
     internalID: 0
     vertices: []
     indices: 
@@ -154,7 +147,7 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      button_150_inactive_0: -743713112
+      image_2026-04-16_200849938_0: 385968327
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

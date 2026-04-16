@@ -1,12 +1,5 @@
 fileFormatVersion: 2
-guid: 6a4f3f9bc674f824e9d0b609b3f53406
-AssetOrigin:
-  serializedVersion: 1
-  productId: 184903
-  packageName: Simple Button Set 02
-  packageVersion: 1.0
-  assetPath: Assets/TWD/FreeButtonSet/Textures/buttons/button_150_inactive.png
-  uploadId: 405951
+guid: d0ed33e92de61cf4bbfdbc595780ea09
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -41,22 +34,22 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 30, y: 30, z: 30, w: 30}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -72,7 +65,7 @@ TextureImporter:
   ignorePngGamma: 0
   applyGammaDecoding: 0
   swizzle: 50462976
-  cookieLightType: 1
+  cookieLightType: 0
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
@@ -115,29 +108,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: button_150_inactive_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 150
-        height: 150
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 25, y: 25, z: 25, w: 25}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 04f34da5c414e2c40898061e4c9d1496
-      internalID: -743713112
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     customData: 
     physicsShape: []
@@ -150,11 +121,8 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
-    nameFileIdTable:
-      button_150_inactive_0: -743713112
+      entries: []
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -34,32 +34,42 @@ public class FirebaseAuthManager : MonoBehaviour
     }
 
     // ================= REGISTER =================
-    public async void Register(string email, string password, string username)
-    {
+    public async Task Register(string email, string password, string username)
+    {       
         if (!isReady)
         {
-            Debug.LogError("Firebase chưa sẵn sàng!");
+            LoginController.Instance.SetNotification("Firebase chưa sẵn sàng");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(username))
+        {
+            LoginController.Instance.SetNotification("Vui lòng nhập username");
             return;
         }
 
         try
         {
-            //  Check username
             var querySnapshot = await db.Collection("users")
                                         .WhereEqualTo("username", username)
                                         .GetSnapshotAsync();
 
             if (querySnapshot.Count > 0)
             {
-                Debug.LogError("Username đã tồn tại!");
+                LoginController.Instance.SetNotification("Username đã tồn tại");
                 return;
             }
 
-            //  Tạo account
             var result = await auth.CreateUserWithEmailAndPasswordAsync(email, password);
+
+            if (result == null || result.User == null)
+            {
+                LoginController.Instance.SetNotification("Đăng ký thất bại");
+                return;
+            }
+
             FirebaseUser newUser = result.User;
 
-            //  Lưu Firestore
             var userData = new Dictionary<string, object>()
             {
                 { "username", username },
@@ -70,26 +80,101 @@ public class FirebaseAuthManager : MonoBehaviour
                     .Document(newUser.UserId)
                     .SetAsync(userData);
 
-            Debug.Log("Đăng ký thành công!");
+            LoginController.Instance.SetNotification("Đăng ký thành công!");
             LoginController.Instance.LoginPanel();
+        }
+        catch (FirebaseException e)
+        {
+            HandleAuthError(e);
         }
         catch (System.Exception e)
         {
-            Debug.LogError("Register lỗi: " + e);
+            LoginController.Instance.SetNotification("Lỗi hệ thống");
         }
     }
 
     // ================= LOGIN =================
-    public async void Login(string email, string password)
+    public async Task Login(string email, string password)
     {
+        while (!isReady)    
+        {
+            await Task.Delay(100);
+        }
+
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+        {
+            LoginController.Instance.SetNotification("Nhập email và password");
+            return;
+        }
+
         try
         {
             var result = await auth.SignInWithEmailAndPasswordAsync(email, password);
-            Debug.Log("Đăng nhập thành công!");
+
+            if (result == null || result.User == null)
+            {
+                LoginController.Instance.SetNotification("Đăng nhập thất bại");
+                return;
+            }
+
+            FirebaseUser user = result.User;
+
+            await LoadUserData(user.UserId);
+
+            LoginController.Instance.SetNotification("");
+
+            OnLoginSuccess();
+        }
+        catch (FirebaseException e)
+        {
+            HandleAuthError(e);
+        }
+        catch (System.Exception)
+        {
+            LoginController.Instance.SetNotification("Lỗi hệ thống");
+        }
+    }
+    void OnLoginSuccess()
+    {
+        if (LoginController.Instance != null)
+            LoginController.Instance.loadingUI.SetActive(false);
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.UpdateUI();
+
+        if (SenceController.Instance != null)
+        {
+            SenceController.Instance.StartCoroutine(SenceController.Instance.ChangeSence("Mainmenu") );
+        }
+            
+    }
+    private async Task LoadUserData(string userId)
+    {
+        try
+        {
+            DocumentSnapshot snapshot = await db.Collection("users")
+                                                .Document(userId)
+                                                .GetSnapshotAsync();
+
+            if (snapshot.Exists)
+            {
+                string username = snapshot.GetValue<string>("username");
+
+                // 👉 Lưu lại để dùng trong game
+                PlayerPrefs.SetString("username", username);
+                PlayerPrefs.Save();
+
+                // 👉 hoặc dùng cho Photon
+                // PhotonNetwork.NickName = username;
+            }
+            else
+            {
+                Debug.LogError("Không tìm thấy user data!");
+            }
         }
         catch (System.Exception e)
         {
-            Debug.LogError("Login lỗi: " + e);
+            Debug.LogError("Lỗi load user: " + e);
         }
     }
 
@@ -98,5 +183,36 @@ public class FirebaseAuthManager : MonoBehaviour
     {
         auth.SignOut();
         Debug.Log("Đã đăng xuất");
+    }
+    void HandleAuthError(FirebaseException e)
+    {
+        AuthError errorCode = (AuthError)e.ErrorCode;
+
+        switch (errorCode)
+        {
+            case AuthError.EmailAlreadyInUse:
+                LoginController.Instance.SetNotification("Email đã tồn tại");
+                break;
+
+            case AuthError.InvalidEmail:
+                LoginController.Instance.SetNotification("Email không hợp lệ");
+                break;
+
+            case AuthError.WeakPassword:
+                LoginController.Instance.SetNotification("Password phải >= 6 ký tự");
+                break;
+
+            case AuthError.WrongPassword:
+                LoginController.Instance.SetNotification("Sai mật khẩu");
+                break;
+
+            case AuthError.UserNotFound:
+                LoginController.Instance.SetNotification("Tài khoản không tồn tại");
+                break;
+
+            default:
+                LoginController.Instance.SetNotification("Lỗi: " + errorCode.ToString());
+                break;
+        }
     }
 }

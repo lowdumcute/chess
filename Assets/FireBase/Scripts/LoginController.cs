@@ -4,9 +4,11 @@ using UnityEngine;
 public class LoginController : MonoBehaviour
 {
     public static LoginController Instance;
+    public TMP_Text Notification; // thông báo 
     public TMP_InputField Name; // khi Register
     public TMP_InputField User;
     public TMP_InputField Password;
+    public GameObject loadingUI;
     private Animator animator;
     public void Awake()
     {
@@ -16,14 +18,23 @@ public class LoginController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         Password.ForceLabelUpdate();
+        Notification.text = "";
     }
-    public void Login()
+    public void SetNotification(string message)
     {
-        FirebaseAuthManager.Instance.Login(User.text, Password.text);
+        Notification.text = message;
     }
-    public void Register()
+    public async void Login()
     {
-        FirebaseAuthManager.Instance.Register(User.text, Password.text, Name.text);
+        loadingUI.SetActive(true);
+        await FirebaseAuthManager.Instance.Login(User.text, Password.text);
+        loadingUI.SetActive(false);
+    }
+    public async void Register()
+    {
+        loadingUI.SetActive(true);
+        await FirebaseAuthManager.Instance.Register(User.text, Password.text, Name.text);
+        loadingUI.SetActive(false);
     }
     public void RegisterPanel()
     {
