@@ -87,10 +87,6 @@ public class FirebaseAuthManager : MonoBehaviour
         {
             HandleAuthError(e);
         }
-        catch (System.Exception e)
-        {
-            LoginController.Instance.SetNotification("Lỗi hệ thống");
-        }
     }
 
     // ================= LOGIN =================
