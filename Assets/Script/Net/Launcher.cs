@@ -11,7 +11,7 @@ public class Launcher : MonoBehaviour, INetworkRunnerCallbacks
     public NetworkObject chessboardPrefab;
 
     public NetworkRunner runner;
-
+    public NetworkObject playerPrefab; // slot player in room 
     public void StartAsHost()
     {
         ChessGameManager.Instance.myTeam = 0;
@@ -56,7 +56,26 @@ public class Launcher : MonoBehaviour, INetworkRunnerCallbacks
     {
         runner.Spawn(chessboardPrefab, Vector3.zero, Quaternion.identity);
     }
+    public void StartMatch()
+    {
+        if (!runner.IsServer) return;
 
+        if (runner.ActivePlayers.Count() < 2)
+        {
+            Debug.Log("Chưa đủ người!");
+            return;
+        }
+
+        Debug.Log("Start Game!");
+
+        NetworkObject boardObj = runner.Spawn(chessboardPrefab, Vector3.zero, Quaternion.identity);
+
+        if (boardObj.TryGetComponent(out ChessBoardNetworkSpawner board))
+        {
+            board.whitePlayer = runner.ActivePlayers.First(); // host
+            board.blackPlayer = runner.ActivePlayers.Last();  // client
+        }
+    }
     string GenerateRoomCode(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -68,18 +87,7 @@ public class Launcher : MonoBehaviour, INetworkRunnerCallbacks
     {
         Debug.Log($"Player {player.PlayerId} joined.");
 
-        if (runner.IsServer && runner.ActivePlayers.Count() == 2)
-        {
-            Debug.Log("Spawning chessboard...");
-            GameUI.Instance.OnGame();
-
-            NetworkObject boardObj = runner.Spawn(chessboardPrefab, Vector3.zero, Quaternion.identity);
-            if (boardObj.TryGetComponent(out ChessBoardNetworkSpawner board))
-            {
-                board.whitePlayer = runner.ActivePlayers.First();
-                board.blackPlayer = runner.ActivePlayers.Last();
-            }
-        }
+        GameUI.Instance.UpdateRoomUI(runner);
     }
 
     // Các callback còn lại giữ nguyên

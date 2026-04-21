@@ -27,14 +27,14 @@ public class FirebaseAuthManager : MonoBehaviour
 
             MainThreadDispatcher.Run(() =>
             {
-                LoginController.Instance?.SetNotification("Firebase Ready");
+                //LoginController.Instance?.SetNotification("Firebase Ready");
             });
         }
         else
         {
             MainThreadDispatcher.Run(() =>
             {
-                LoginController.Instance?.SetNotification("Firebase lỗi");
+                //LoginController.Instance?.SetNotification("Firebase lỗi");
             });
         }
     }
@@ -110,7 +110,7 @@ public class FirebaseAuthManager : MonoBehaviour
 
             string username = snapshot.GetValue<string>("username");
 
-            // ⚠️ đưa về main thread
+            //  đưa về main thread
             MainThreadDispatcher.Run(() =>
             {
                 PlayerPrefs.SetString("username", username);
