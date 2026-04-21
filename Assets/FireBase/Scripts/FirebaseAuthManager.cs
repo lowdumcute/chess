@@ -1,16 +1,15 @@
 using UnityEngine;
 using Firebase;
+using Firebase.Auth;
 using Firebase.Firestore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Security.Cryptography;
-using System.Text;
-using System.Linq;
 
 public class FirebaseAuthManager : MonoBehaviour
 {
     public static FirebaseAuthManager Instance;
 
+    private FirebaseAuth auth;
     private FirebaseFirestore db;
     private bool isReady = false;
 
@@ -22,58 +21,96 @@ public class FirebaseAuthManager : MonoBehaviour
 
         if (dependencyStatus == DependencyStatus.Available)
         {
+            auth = FirebaseAuth.DefaultInstance;
             db = FirebaseFirestore.DefaultInstance;
             isReady = true;
 
             MainThreadDispatcher.Run(() =>
             {
-                if (LoginController.Instance != null)
-                    LoginController.Instance.SetNotification("Firebase Ready");
+                LoginController.Instance?.SetNotification("Firebase Ready");
             });
         }
         else
         {
             MainThreadDispatcher.Run(() =>
             {
-                if (LoginController.Instance != null)
-                    LoginController.Instance.SetNotification("Firebase lỗi");
+                LoginController.Instance?.SetNotification("Firebase lỗi");
             });
         }
     }
 
-    string Hash(string input)
-    {
-        using (SHA256 sha = SHA256.Create())
-        {
-            byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
-            return System.Convert.ToBase64String(bytes);
-        }
-    }
-
-    public async Task<bool> Login(string username, string password)
+    // ================= REGISTER =================
+    public async Task<bool> Register(string email, string password, string username)
     {
         while (!isReady) await Task.Delay(100);
 
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(username))
             return false;
 
         try
         {
-            var query = await db.Collection("users")
+            // check username trùng
+            var check = await db.Collection("users")
                                 .WhereEqualTo("username", username)
                                 .GetSnapshotAsync();
 
-            if (query.Count == 0)
+            if (check.Count > 0)
                 return false;
 
-            var doc = query.Documents.First();
+            // tạo account auth
+            var result = await auth.CreateUserWithEmailAndPasswordAsync(email, password);
 
-            string savedPass = doc.GetValue<string>("password");
-
-            if (savedPass != Hash(password))
+            if (result == null || result.User == null)
                 return false;
 
-            // ⚠️ CHỖ NGUY HIỂM → đưa về main thread
+            string uid = result.User.UserId;
+
+            // lưu firestore
+            var data = new Dictionary<string, object>()
+            {
+                { "username", username },
+                { "email", email }
+            };
+
+            await db.Collection("users").Document(uid).SetAsync(data);
+
+            return true;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e);
+            return false;
+        }
+    }
+
+    // ================= LOGIN =================
+    public async Task<bool> Login(string email, string password)
+    {
+        while (!isReady) await Task.Delay(100);
+
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            return false;
+
+        try
+        {
+            var result = await auth.SignInWithEmailAndPasswordAsync(email, password);
+
+            if (result == null || result.User == null)
+                return false;
+
+            string uid = result.User.UserId;
+
+            // load username từ Firestore
+            var snapshot = await db.Collection("users")
+                                   .Document(uid)
+                                   .GetSnapshotAsync();
+
+            if (!snapshot.Exists)
+                return false;
+
+            string username = snapshot.GetValue<string>("username");
+
+            // ⚠️ đưa về main thread
             MainThreadDispatcher.Run(() =>
             {
                 PlayerPrefs.SetString("username", username);
@@ -82,40 +119,7 @@ public class FirebaseAuthManager : MonoBehaviour
 
             return true;
         }
-        catch (System.Exception e)
-        {
-            Debug.LogError(e);
-            return false;
-        }
-    }
-
-    public async Task<bool> Register(string username, string password)
-    {
-        while (!isReady) await Task.Delay(100);
-
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            return false;
-
-        try
-        {
-            var query = await db.Collection("users")
-                                .WhereEqualTo("username", username)
-                                .GetSnapshotAsync();
-
-            if (query.Count > 0)
-                return false;
-
-            var data = new Dictionary<string, object>()
-            {
-                { "username", username },
-                { "password", Hash(password) }
-            };
-
-            await db.Collection("users").AddAsync(data);
-
-            return true;
-        }
-        catch (System.Exception e)
+        catch (FirebaseException e)
         {
             Debug.LogError(e);
             return false;
@@ -124,6 +128,7 @@ public class FirebaseAuthManager : MonoBehaviour
 
     public void Logout()
     {
+        auth.SignOut();
         PlayerPrefs.DeleteKey("username");
     }
 }

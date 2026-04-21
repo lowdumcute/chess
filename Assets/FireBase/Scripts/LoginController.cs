@@ -8,6 +8,7 @@ public class LoginController : MonoBehaviour
     public TMP_InputField Name; // khi Register
     public TMP_InputField User;
     public TMP_InputField Password;
+    
     public GameObject loadingUI;
     private Animator animator;
     public void Awake()
@@ -30,7 +31,6 @@ public class LoginController : MonoBehaviour
 
         bool success = await FirebaseAuthManager.Instance.Login(User.text, Password.text);
 
-        // 🔥 QUAY VỀ MAIN THREAD
         MainThreadDispatcher.Run(() =>
         {
             loadingUI.SetActive(false);
@@ -45,7 +45,7 @@ public class LoginController : MonoBehaviour
             }
             else
             {
-                SetNotification("Sai tài khoản hoặc mật khẩu");
+                SetNotification("Sai email hoặc mật khẩu");
             }
         });
     }
@@ -54,7 +54,7 @@ public class LoginController : MonoBehaviour
     {
         loadingUI.SetActive(true);
 
-        bool success = await FirebaseAuthManager.Instance.Register(Name.text, Password.text);
+        bool success = await FirebaseAuthManager.Instance.Register(User.text, Password.text, Name.text);
 
         MainThreadDispatcher.Run(() =>
         {
@@ -67,16 +67,18 @@ public class LoginController : MonoBehaviour
             }
             else
             {
-                SetNotification("Username đã tồn tại");
+                SetNotification("Email hoặc username đã tồn tại");
             }
         });
     }
     public void RegisterPanel()
     {
+        Notification.text = "";
         animator.SetBool("Register", true);
     }
     public void LoginPanel()
     {
+        Notification.text = "";
         animator.SetBool("Register", false);
     }
   
