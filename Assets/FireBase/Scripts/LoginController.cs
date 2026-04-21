@@ -27,14 +27,49 @@ public class LoginController : MonoBehaviour
     public async void Login()
     {
         loadingUI.SetActive(true);
-        await FirebaseAuthManager.Instance.Login(User.text, Password.text);
-        loadingUI.SetActive(false);
+
+        bool success = await FirebaseAuthManager.Instance.Login(User.text, Password.text);
+
+        // 🔥 QUAY VỀ MAIN THREAD
+        MainThreadDispatcher.Run(() =>
+        {
+            loadingUI.SetActive(false);
+
+            if (success)
+            {
+                SetNotification("");
+
+                SenceController.Instance.StartCoroutine(
+                    SenceController.Instance.ChangeSence("Mainmenu")
+                );
+            }
+            else
+            {
+                SetNotification("Sai tài khoản hoặc mật khẩu");
+            }
+        });
     }
+
     public async void Register()
     {
         loadingUI.SetActive(true);
-        await FirebaseAuthManager.Instance.Register(User.text, Password.text, Name.text);
-        loadingUI.SetActive(false);
+
+        bool success = await FirebaseAuthManager.Instance.Register(Name.text, Password.text);
+
+        MainThreadDispatcher.Run(() =>
+        {
+            loadingUI.SetActive(false);
+
+            if (success)
+            {
+                SetNotification("Đăng ký thành công!");
+                LoginPanel();
+            }
+            else
+            {
+                SetNotification("Username đã tồn tại");
+            }
+        });
     }
     public void RegisterPanel()
     {
